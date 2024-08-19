@@ -3,7 +3,9 @@ field_separator: "\t"
 seq_separator: " "
 data_path: /Users/andreaforster/dev/Recbole-Debias/dataset/
 dataset: brightkite_sample
-epochs: 2
+epochs: 200
+learning_rate: 0.001
+batch_size: 256
 # Common Features
 USER_ID_FIELD: user_id
 ITEM_ID_FIELD: item_id
