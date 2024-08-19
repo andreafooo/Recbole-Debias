@@ -30,33 +30,35 @@ def create_dataset(config):
     Returns:
         Dataset: Constructed dataset.
     """
-    dataset_module = importlib.import_module('recbole_debias.data.dataset')
-    if hasattr(dataset_module, config['model'] + 'Dataset'):
-        dataset_class = getattr(dataset_module, config['model'] + 'Dataset')
+    dataset_module = importlib.import_module("recbole_debias.data.dataset")
+    if hasattr(dataset_module, config["model"] + "Dataset"):
+        dataset_class = getattr(dataset_module, config["model"] + "Dataset")
     else:
-        model_type = config['MODEL_TYPE']
+        model_type = config["MODEL_TYPE"]
         type2class = {
-            ModelType.DEBIAS: 'DebiasDataset',
+            ModelType.DEBIAS: "DebiasDataset",
         }
         dataset_class = getattr(dataset_module, type2class[model_type])
 
-    default_file = os.path.join(config['checkpoint_dir'], f'{config["dataset"]}-{dataset_class.__name__}.pth')
-    file = config['dataset_save_path'] or default_file
+    default_file = os.path.join(
+        config["checkpoint_dir"], f'{config["dataset"]}-{dataset_class.__name__}.pth'
+    )
+    file = config["dataset_save_path"] or default_file
     if os.path.exists(file):
-        with open(file, 'rb') as f:
+        with open(file, "rb") as f:
             dataset = pickle.load(f)
         dataset_args_unchanged = True
-        for arg in dataset_arguments + ['seed', 'repeatable']:
+        for arg in dataset_arguments + ["seed", "repeatable"]:
             if config[arg] != dataset.config[arg]:
                 dataset_args_unchanged = False
                 break
         if dataset_args_unchanged:
             logger = getLogger()
-            logger.info(set_color('Load filtered dataset from', 'pink') + f': [{file}]')
+            logger.info(set_color("Load filtered dataset from", "pink") + f": [{file}]")
             return dataset
 
     dataset = dataset_class(config)
-    if config['save_dataset']:
+    if config["save_dataset"]:
         dataset.save()
     return dataset
 
@@ -81,17 +83,27 @@ def data_preparation(config, dataset):
     if dataloaders is not None:
         train_data, valid_data, test_data = dataloaders
     else:
-        model_type = config['MODEL_TYPE']
+        model_type = config["MODEL_TYPE"]
         built_datasets = dataset.build()
 
         train_dataset, valid_dataset, test_dataset = built_datasets
-        train_sampler, valid_sampler, test_sampler = create_samplers(config, dataset, built_datasets)
+        train_sampler, valid_sampler, test_sampler = create_samplers(
+            config, dataset, built_datasets
+        )
 
-        train_data = get_dataloader(config, 'train')(config, train_dataset, train_sampler, shuffle=config["shuffle"])
-        valid_data = get_dataloader(config, 'evaluation')(config, valid_dataset, valid_sampler, shuffle=False)
-        test_data = get_dataloader(config, 'evaluation')(config, test_dataset, test_sampler, shuffle=False)
-        if config['save_dataloaders']:
-            save_split_dataloaders(config, dataloaders=(train_data, valid_data, test_data))
+        train_data = get_dataloader(config, "train")(
+            config, train_dataset, train_sampler, shuffle=config["shuffle"]
+        )
+        valid_data = get_dataloader(config, "evaluation")(
+            config, valid_dataset, valid_sampler, shuffle=False
+        )
+        test_data = get_dataloader(config, "evaluation")(
+            config, test_dataset, test_sampler, shuffle=False
+        )
+        if config["save_dataloaders"]:
+            save_split_dataloaders(
+                config, dataloaders=(train_data, valid_data, test_data)
+            )
 
     logger = getLogger()
     logger.info(
@@ -129,11 +141,11 @@ def get_dataloader(config, phase):
         "DICE": _get_DICE_dataloader,
     }
 
-    if config['model'] in register_table:
-        return register_table[config['model']](config, phase)
+    if config["model"] in register_table:
+        return register_table[config["model"]](config, phase)
 
-    model_type = config['MODEL_TYPE']
-    if phase == 'train':
+    model_type = config["MODEL_TYPE"]
+    if phase == "train":
         if model_type == ModelType.DEBIAS:
             return DebiasDataloader
     else:
@@ -154,7 +166,7 @@ def _get_DICE_dataloader(config, phase):
     Returns:
         type: The dataloader class that meets the requirements in :attr:`config` and :attr:`phase`.
     """
-    if phase == 'train':
+    if phase == "train":
         return DICEDataloader
     else:
         eval_mode = config["eval_args"]["mode"]
@@ -179,31 +191,50 @@ def create_samplers(config, dataset, built_datasets):
             - valid_sampler (AbstractSampler): The sampler for validation.
             - test_sampler (AbstractSampler): The sampler for testing.
     """
-    phases = ['train', 'valid', 'test']
-    train_neg_sample_args = config['train_neg_sample_args']
-    eval_neg_sample_args = config['eval_neg_sample_args']
+    phases = ["train", "valid", "test"]
+    train_neg_sample_args = config["train_neg_sample_args"]
+    eval_neg_sample_args = config["eval_neg_sample_args"]
     sampler = None
     train_sampler, valid_sampler, test_sampler = None, None, None
 
-    if train_neg_sample_args['distribution'] != 'none':
-        if config['model'] == 'DICE':
-            sampler = DICESampler(phases, built_datasets, train_neg_sample_args['distribution'], train_neg_sample_args["alpha"])
-        elif not config['repeatable']:
-            sampler = Sampler(phases, built_datasets, train_neg_sample_args['distribution'], train_neg_sample_args["alpha"])
+    if train_neg_sample_args["distribution"] != "none":
+        if config["model"] == "DICE":
+            sampler = DICESampler(
+                phases,
+                built_datasets,
+                train_neg_sample_args["distribution"],
+                train_neg_sample_args["alpha"],
+            )
+        elif not config["repeatable"]:
+            sampler = Sampler(
+                phases,
+                built_datasets,
+                train_neg_sample_args["distribution"],
+                train_neg_sample_args["alpha"],
+            )
         else:
-            sampler = RepeatableSampler(phases, dataset, train_neg_sample_args['distribution'], train_neg_sample_args["alpha"])
+            sampler = RepeatableSampler(
+                phases,
+                dataset,
+                train_neg_sample_args["distribution"],
+                train_neg_sample_args["alpha"],
+            )
 
-        train_sampler = sampler.set_phase('train')
+        train_sampler = sampler.set_phase("train")
 
-    if eval_neg_sample_args['distribution'] != 'none':
+    if eval_neg_sample_args["distribution"] != "none":
         if sampler is None:
-            if not config['repeatable']:
-                sampler = Sampler(phases, built_datasets, eval_neg_sample_args['distribution'])
+            if not config["repeatable"]:
+                sampler = Sampler(
+                    phases, built_datasets, eval_neg_sample_args["distribution"]
+                )
             else:
-                sampler = RepeatableSampler(phases, dataset, eval_neg_sample_args['distribution'])
+                sampler = RepeatableSampler(
+                    phases, dataset, eval_neg_sample_args["distribution"]
+                )
         else:
-            sampler.set_distribution(eval_neg_sample_args['distribution'])
-        valid_sampler = sampler.set_phase('valid')
-        test_sampler = sampler.set_phase('test')
+            sampler.set_distribution(eval_neg_sample_args["distribution"])
+        valid_sampler = sampler.set_phase("valid")
+        test_sampler = sampler.set_phase("test")
 
     return train_sampler, valid_sampler, test_sampler

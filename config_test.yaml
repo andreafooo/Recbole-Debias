@@ -2,8 +2,8 @@
 field_separator: "\t"
 seq_separator: " "
 data_path: /Users/andreaforster/dev/Recbole-Debias/dataset/
-dataset: gowalla_sample
-
+dataset: brightkite_sample
+epochs: 2
 # Common Features
 USER_ID_FIELD: user_id
 ITEM_ID_FIELD: item_id
@@ -14,6 +14,8 @@ seq_len: ~
 LABEL_FIELD: label
 # NegSample Prefix for Pair-wise DataLoader
 NEG_PREFIX: neg_
+
+
 # Sequential Model Needed
 # ITEM_LIST_LENGTH_FIELD: item_length
 # LIST_SUFFIX: _list

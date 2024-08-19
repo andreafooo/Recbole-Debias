@@ -96,3 +96,6 @@ Please cite the following paper as the reference if you use our code or processe
   year={2022}
 }
 
+## Notes: 
+
+To make it work I had to change the functions with np.float to float since it was deprecated in numpy
