@@ -127,7 +127,7 @@ def run_configurations(model, config):
     model_file_cleaned = model_file.split(".")[0]
 
     FINAL_OUTPUT_DIR = (
-        f"{OUTPUT_DIR}-debias-{config_dict['dataset']}-{model_file_cleaned}/"
+        f"{OUTPUT_DIR}+{config_dict['dataset']}-debias-{model_file_cleaned}/"
     )
 
     if not os.path.exists(FINAL_OUTPUT_DIR):
@@ -140,7 +140,7 @@ def run_configurations(model, config):
     with open(f"{FINAL_OUTPUT_DIR}config.yaml", "w") as f:
         yaml.dump(config_dict, f, indent=4)
 
-    with open(f"{FINAL_OUTPUT_DIR}general_evaluation", "w") as f:
+    with open(f"{FINAL_OUTPUT_DIR}general_evaluation.json", "w") as f:
         json.dump(output_dict, f, indent=4)
 
     # with open(f"{FINAL_OUTPUT_DIR}train_data.json", "w") as f:
