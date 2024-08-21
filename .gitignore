@@ -140,3 +140,4 @@ neumf.py
 NeuMF.yaml
 .idea
 .DS_Store
+config/

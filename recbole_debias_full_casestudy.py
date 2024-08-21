@@ -127,7 +127,7 @@ def run_configurations(model, config):
     model_file_cleaned = model_file.split(".")[0]
 
     FINAL_OUTPUT_DIR = (
-        f"{OUTPUT_DIR}+{config_dict['dataset']}-debias-{model_file_cleaned}/"
+        f"{OUTPUT_DIR}{config_dict['dataset']}-debias-{model_file_cleaned}/"
     )
 
     if not os.path.exists(FINAL_OUTPUT_DIR):

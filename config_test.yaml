@@ -2,6 +2,7 @@
 field_separator: "\t"
 seq_separator: " "
 data_path: /Users/andreaforster/dev/Recbole-Debias/dataset/
+model: PDA
 dataset: yelp_sample
 epochs: 200
 learning_rate: 0.001
