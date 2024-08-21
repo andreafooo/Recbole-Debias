@@ -13,16 +13,15 @@ from inherited.own_recbole_quickstart import load_data_and_model
 
 # See evaluation metrics: https://recbole.io/docs/recbole/recbole.evaluator.metrics.html
 
+datasets = [
+    "brightkite_sample",
+    "gowalla_sample",
+    "foursquaretky_sample",
+    "snowcard_sample",
+    "yelp_sample",
+]
 
-config = "config_test.yaml"
-
-with open(config, "r") as file:
-    config_dict = yaml.safe_load(file)
-
-OUTPUT_DIR = f"/Volumes/Forster Neu/Masterarbeit Data/{config_dict['dataset'].split('_')[0]}_dataset/recommendations/"
-
-if not os.path.exists(OUTPUT_DIR):
-    os.makedirs(OUTPUT_DIR)
+models = ["PDA", "MF", "MACR"]
 
 
 def find_newest_model(directory):
@@ -38,9 +37,9 @@ def find_newest_model(directory):
     return newest_file
 
 
-def run_configurations(model, config):
+def run_configurations(config):
     ### Run the RecBole model with specified configurations
-    output_dict = run_recbole_debias(model=model, config_file_list=[config])
+    output_dict = run_recbole_debias(config_file_list=[config])
 
     ### Generating the recommendation list + other metadata
     # Directory to scan
@@ -52,6 +51,14 @@ def run_configurations(model, config):
         model_file = newest_model_file.split("/")[-1]
     else:
         print("No model files found in the directory.")
+
+    with open(config, "r") as file:
+        config_dict = yaml.safe_load(file)
+
+    OUTPUT_DIR = f"/Volumes/Forster Neu/Masterarbeit Data/{config_dict['dataset'].split('_')[0]}_dataset/recommendations/"
+
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
 
     # Read user IDs from CSV
     df = pd.read_csv(
@@ -154,6 +161,11 @@ def run_configurations(model, config):
 
 
 if __name__ == "__main__":
-    run_configurations("PDA", config)
-    run_configurations("MF", config)
-    run_configurations("MACR", config)
+    # config = "config_test.yaml"
+    for dataset in datasets:
+        for model in models:
+            config = f"config/{dataset}/{model}/config_test.yaml"
+            run_configurations(config)
+            print(f"Finished {model} for {dataset}")
+            print("--------------------------------------------------------")
+    print("All models finished.")
