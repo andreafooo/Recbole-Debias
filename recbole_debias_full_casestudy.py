@@ -7,6 +7,9 @@ import pandas as pd
 import os
 import yaml
 import glob
+from globals import (
+    OUTPUT_DIR_PREFIX,
+)  # TO-DO: create a globals.py file with OUTPUT_DIR_PREFIX = "/the/path/to/your/output/directory/"
 
 from inherited.own_recbole_quickstart import load_data_and_model
 
@@ -55,7 +58,7 @@ def run_configurations(config):
     with open(config, "r") as file:
         config_dict = yaml.safe_load(file)
 
-    OUTPUT_DIR = f"/Volumes/Forster Neu/Masterarbeit Data/{config_dict['dataset'].split('_')[0]}_dataset/recommendations/"
+    OUTPUT_DIR = f"{OUTPUT_DIR_PREFIX}{config_dict['dataset'].split('_')[0]}_dataset/recommendations/"
 
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)

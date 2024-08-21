@@ -6,9 +6,7 @@ from recbole_debias.quick_start import objective_function
 hyperopt = True
 
 
-base_config_file_path = (
-    "/Users/andreaforster/dev/thesis/Poi_Recommender/RecBole/config_test.yaml"
-)
+base_config_file_path = "config_test.yaml"
 with open(base_config_file_path, "r") as file:
     base_config = yaml.safe_load(file)
 

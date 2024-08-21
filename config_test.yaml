@@ -1,7 +1,7 @@
 # Atomic File Format
 field_separator: "\t"
 seq_separator: " "
-data_path: /Users/andreaforster/dev/Recbole-Debias/dataset/
+data_path: /dataset/
 model: PDA
 dataset: yelp_sample
 epochs: 200

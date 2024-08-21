@@ -141,3 +141,4 @@ NeuMF.yaml
 .idea
 .DS_Store
 config/
+globals.py
