@@ -142,3 +142,4 @@ NeuMF.yaml
 .DS_Store
 config/
 globals.py
+config_test.yaml

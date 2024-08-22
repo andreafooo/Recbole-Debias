@@ -18,7 +18,10 @@ datasets = [
     "yelp_sample",
 ]
 
-models = ["PDA", "MF", "MACR"]
+
+datasets = ["gowalla_sample"]
+
+models = ["MACR"]
 
 
 def hyperopt_tune(config_file_path, params_file, output_file):
